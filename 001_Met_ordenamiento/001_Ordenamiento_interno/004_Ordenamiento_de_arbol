@@ -1,0 +1,88 @@
+
+
+from typing import List, TypeVar, Optional
+"""Ordenamiento por árbol (tree sort) usando un Binary Search Tree (BST).
+
+Se construye un BST insertando los elementos de la lista y luego se realiza
+un recorrido in-order para obtener los elementos ordenados.
+
+Nota: esta implementación usa un BST sin balanceo. Complejidad:
+  - Tiempo promedio: O(n log n)
+  - Peor caso: O(n^2) (si los datos llegan ya ordenados y el BST se vuelve degenerado)
+  - Espacio adicional: O(n) para el árbol (además de la lista de salida)
+
+La función `tree_sort` devuelve una nueva lista ordenada (no muta la entrada).
+"""
+
+from typing import List, TypeVar, Optional
+
+T = TypeVar('T')
+
+
+class _Node:
+	__slots__ = ("value", "left", "right")
+
+	def __init__(self, value: T) -> None:
+		self.value: T = value
+		self.left: Optional[_Node] = None
+		self.right: Optional[_Node] = None
+
+
+def _insert(root: Optional[_Node], value: T) -> _Node:
+	"""Inserta `value` en el BST y devuelve la raíz (posiblemente nueva)."""
+	if root is None:
+		return _Node(value)
+	# Insertar recursivamente: valores iguales van a la rama derecha (estable)
+	if value < root.value:
+		root.left = _insert(root.left, value)
+	else:
+		root.right = _insert(root.right, value)
+	return root
+
+
+def _in_order(root: Optional[_Node], out: List[T]) -> None:
+	"""Recorrido in-order (izquierda, raíz, derecha) que añade valores a `out`."""
+	if root is None:
+		return
+	_in_order(root.left, out)
+	out.append(root.value)
+	_in_order(root.right, out)
+
+
+def tree_sort(arr: List[T]) -> List[T]:
+	"""Ordena `arr` usando un BST y devuelve una nueva lista ordenada.
+
+	Esta versión no muta la lista de entrada; si quieres una versión in-place,
+	podemos añadir una variante que copie los resultados sobre la entrada.
+	"""
+	root: Optional[_Node] = None
+	for v in arr:
+		root = _insert(root, v)
+	salida: List[T] = []
+	_in_order(root, salida)
+	return salida
+
+
+if __name__ == '__main__':
+	# Pruebas básicas
+	casos = [
+		([], []),
+		([1], [1]),
+		([1, 2, 3, 4], [1, 2, 3, 4]),
+		([4, 3, 2, 1], [1, 2, 3, 4]),
+		([3, 1, 2, 1], [1, 1, 2, 3]),
+		([5, -1, 3, 0, 2], [-1, 0, 2, 3, 5]),
+	]
+
+	all_ok = True
+	for entrada, esperado in casos:
+		resultado = tree_sort(list(entrada))
+		ok = resultado == esperado
+		print(f'entrada: {entrada} -> resultado: {resultado} | esperado: {esperado} | OK: {ok}')
+		all_ok = all_ok and ok
+
+	if all_ok:
+		print('\nTodas las pruebas pasaron.')
+	else:
+		print('\nAlgunas pruebas fallaron.')
+
