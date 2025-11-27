@@ -62,7 +62,7 @@ def dijkstra_paso_a_paso(grafo, origen, destino):
     print("Costo total:", distancias[destino])
 
 
-# Ejemplo de grafo (puedes cambiarlo)
+# Ejemplo 
 grafo_ejemplo = {
     "A": [("B", 4), ("C", 2)],
     "B": [("A", 4), ("C", 1), ("D", 5)],
